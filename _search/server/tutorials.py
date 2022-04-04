@@ -45,17 +45,30 @@ def parse_notebook(path):
 
     return doc
 
-# type of cell is dict for reference
-# 2 cases: java file or a notebook
-# case 1: notebook -> need info inside cells and then info from output lines
-# case 2: java file -> need class name and class javadoc for description
+# type of cell is dict
 def process_cell(cell):
-    # case 1: notebook
+    result = ''
 
-    # case 2: java files
+    if 'source' in cell:
+        result += filter_data("".join(cell['source']))
+    
+    # case 1: code cell
+    if 'outputs' in cell:
+        for o in cell['outputs']:
+            #vals = o.values()
+            vals = [v for k, v in o.items() if is_good_key(k)]
+            result += filter_data("".join(vals))
 
-    return type(cell)
+    return result
 
+# takes input of string; filters html and other data 
+def filter_data(data):
+    # if len(data) > 5000:
+    return data # this string will have markup with it 
+    # TODO: remove markup from data
+
+def is_good_key(k):
+    return k == 'text/plain' or k == 'text/html'
 
 def load_imagej_tutorials(root):
     """
@@ -91,6 +104,3 @@ def load_imagej_tutorials(root):
     logger.info(f'Loaded {len(documents)} documents from Jupyter notebooks')
 
     return documents
-
-def main():
-    print("Hello")

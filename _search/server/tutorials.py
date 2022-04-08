@@ -3,7 +3,7 @@
 # Parse ImageJ tutorials into documents for
 # use with their own searchable collection.
 
-import logging, traceback
+import logging, traceback, re
 import json
 from parseutil import first_sentence
 from pathlib import Path
@@ -64,7 +64,8 @@ def process_cell(cell):
 # takes input of string; filters html and other data 
 def filter_data(data):
     # if len(data) > 5000:
-    return data # this string will have markup with it 
+    filtered = re.sub('<[^>]*>', '', data)
+    return filtered # this string will have markup with it 
     # TODO: remove markup from data
 
 def is_good_key(k):

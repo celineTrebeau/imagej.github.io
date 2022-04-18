@@ -56,8 +56,16 @@ def process_cell(cell):
     if 'outputs' in cell:
         for o in cell['outputs']:
             #vals = o.values()
-            vals = [v for k, v in o.items() if is_good_key(k)]
-            result += filter_data("".join(vals))
+            if 'text' in o:
+                result += filter_data("".join(o['text']))
+            if 'data' in o:
+                # if has_good_key(o['data']):
+                if 'text/html' in o['data']:
+                    result += filter_data("".join(o['data']['text/html']))
+                if 'text/plain' in o['data']:
+                    result += filter_data("".join(o['data']['text/plain']))
+            # vals = [v for k, v in o.items() if is_good_key(k)]
+            # result += filter_data("".join(vals))
 
     return result
 
@@ -68,8 +76,9 @@ def filter_data(data):
     return filtered # this string will have markup with it 
     # TODO: remove markup from data
 
-def is_good_key(k):
-    return k == 'text/plain' or k == 'text/html'
+def has_good_key(k):
+    keys = "".join(list(k.keys()))
+    return 'text/plain' in keys or 'text/html' in keys
 
 def load_imagej_tutorials(root):
     """
